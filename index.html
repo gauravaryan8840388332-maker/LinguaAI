@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LinguaAI - Azure Language Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--ink:#0a0d14;--gold:#c9a84c;--gold-light:#e8c97a;--gold-pale:rgba(201,168,76,.12);--teal:#1a8c7a;--teal-light:#22b09b;--rose:#c94c6b;--sky:#3a7bd5;--text-1:#f2ede4;--text-2:#9fa8b8;--text-3:#5a6278;--border:rgba(255,255,255,.07);--border-warm:rgba(201,168,76,.2);--card-bg:rgba(255,255,255,.04);--r-sm:6px;--r-md:12px;--r-lg:20px;--r-xl:28px;--ease:cubic-bezier(.4,0,.2,1)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Outfit,sans-serif;background:var(--ink);color:var(--text-1);min-height:100vh;overflow-x:hidden}button,input,textarea{font:inherit}button{cursor:pointer}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:4px}
+.bg-canvas{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 90% 70% at 10% 5%,rgba(26,140,122,.08),transparent 55%),radial-gradient(ellipse 70% 60% at 90% 90%,rgba(58,123,213,.07),transparent 55%),var(--ink)}.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:60px 60px}
+.page{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 24px 100px}nav{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:24px 0;border-bottom:1px solid var(--border);animation:fadeDown .6s var(--ease) both}.nav-brand{display:flex;align-items:center;gap:10px;font-family:"Playfair Display",serif;font-size:1.4rem;font-weight:700;color:var(--text-1);text-decoration:none}.nav-logo{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--teal-light));display:grid;place-items:center;font-size:15px;font-weight:900;color:#fff;box-shadow:0 4px 16px rgba(201,168,76,.3)}.nav-pills{display:flex;gap:3px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:100px;padding:4px}.nav-pill{font-size:12px;font-weight:500;padding:6px 16px;border-radius:100px;color:var(--text-2);border:0;background:transparent;transition:all .2s}.nav-pill.active{background:var(--gold);color:var(--ink);font-weight:600}.nav-pill:not(.active):hover{background:rgba(255,255,255,.06);color:var(--text-1)}.nav-badge{font-size:11px;font-weight:600;padding:5px 14px;border-radius:100px;background:var(--gold-pale);border:1px solid var(--border-warm);color:var(--gold-light);letter-spacing:.07em;font-family:"JetBrains Mono",monospace}
+.view{display:none}.view.active{display:block}.hero{padding:70px 0 56px;text-align:center;animation:fadeUp .7s .1s var(--ease) both}.eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);background:var(--gold-pale);border:1px solid var(--border-warm);border-radius:100px;padding:7px 18px;margin-bottom:28px}.pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--gold-light);animation:pulse 2s ease-in-out infinite}@keyframes pulse{50%{opacity:.35;transform:scale(.65)}}h1.title{font-family:"Playfair Display",serif;font-size:clamp(2.5rem,7vw,4.8rem);font-weight:900;line-height:1.08;margin-bottom:20px}.title-grad{background:linear-gradient(90deg,var(--gold),var(--gold-light) 45%,var(--teal-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}.hero-sub{font-size:1.05rem;font-weight:300;color:var(--text-2);max-width:540px;margin:0 auto 40px;line-height:1.7}.feat-chips{display:flex;justify-content:center;flex-wrap:wrap;gap:10px}.feat-chip{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:500;padding:8px 16px;border-radius:100px;border:1px solid;transition:transform .2s}.feat-chip:hover{transform:translateY(-2px)}.chip-s{color:#ff8fa3;border-color:rgba(255,143,163,.25);background:rgba(255,143,163,.07)}.chip-k{color:var(--gold-light);border-color:var(--border-warm);background:var(--gold-pale)}.chip-l{color:#7dd3fc;border-color:rgba(125,211,252,.25);background:rgba(125,211,252,.07)}.chip-n{color:#86efac;border-color:rgba(134,239,172,.25);background:rgba(134,239,172,.07)}.chip-sum{color:#c4b5fd;border-color:rgba(196,181,253,.25);background:rgba(196,181,253,.07)}
+.config-panel,.ws-card,.doc-card,.doc-banner,.rc,#loadingOverlay{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--r-xl)}.config-panel{padding:28px 32px;margin-bottom:24px;position:relative;overflow:hidden;animation:fadeUp .6s .2s var(--ease) both}.config-panel::before,.doc-banner::before,.rc::before{content:"";position:absolute;top:0;left:0;right:0;height:2px}.config-panel::before{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}.config-title,.ws-title,.doc-card-title,.rc-title-row{font-family:"Playfair Display",serif;font-weight:600;display:flex;align-items:center;gap:10px}.config-title{font-size:1rem;margin-bottom:20px}.c-icon,.ws-icon,.doc-card-icon,.rc-icon{border-radius:8px;display:grid;place-items:center;flex-shrink:0}.c-icon,.ws-icon{width:28px;height:28px;background:var(--gold-pale);border:1px solid var(--border-warm);font-size:13px}.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.f-label{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:7px}.f-input,textarea#textInput{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text-1);outline:none;transition:all .2s}.f-input{padding:11px 16px;font-size:13px}.f-input:focus,textarea#textInput:focus{border-color:rgba(201,168,76,.55);box-shadow:0 0 0 3px rgba(201,168,76,.1)}
+.workspace{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;animation:fadeUp .6s .3s var(--ease) both}.ws-card{padding:24px;transition:border-color .2s,box-shadow .2s}.ws-card:hover{border-color:rgba(255,255,255,.12);box-shadow:0 8px 40px rgba(0,0,0,.25)}.ws-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.ws-title{font-size:.95rem}textarea#textInput{min-height:200px;padding:16px;font-size:14px;line-height:1.75;resize:vertical}.char-row{display:flex;justify-content:space-between;margin-top:10px;font-size:11px;color:var(--text-3);font-family:"JetBrains Mono",monospace}.mode-tabs{display:flex;gap:3px;flex-wrap:wrap;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--r-md);padding:4px;margin-bottom:18px}.mode-tab{flex:1;min-width:fit-content;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:8px;border:0;background:transparent;border-radius:var(--r-sm);color:var(--text-3);transition:all .2s;white-space:nowrap}.mode-tab.active{background:var(--gold);color:var(--ink)}.mode-tab:not(.active):hover{color:var(--text-1);background:rgba(255,255,255,.05)}.mode-desc-box{font-size:13px;color:var(--text-2);line-height:1.65;font-weight:300;margin-bottom:18px;min-height:90px}.mode-desc-box strong{color:var(--text-1);font-weight:600;display:block;margin-bottom:5px}.mini-stats{display:flex;gap:10px}.mini-stat{flex:1;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--r-md);padding:14px;text-align:center}.ms-val{font-family:"Playfair Display",serif;font-size:1.5rem;font-weight:700;line-height:1;margin-bottom:3px}.ms-lbl{font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.1em}
+.action-row{display:flex;gap:12px;align-items:center;margin-bottom:24px;animation:fadeUp .6s .35s var(--ease) both}.btn-analyze{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 32px;border-radius:var(--r-md);font-size:15px;font-weight:600;border:0;background:linear-gradient(135deg,var(--gold),#b8960e 50%,var(--teal));color:var(--ink);box-shadow:0 4px 28px rgba(201,168,76,.35);transition:all .3s}.btn-analyze:hover{box-shadow:0 8px 40px rgba(201,168,76,.5);transform:translateY(-2px)}.btn-analyze:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}.btn-clear,.ex-btn,.copy-btn,.code-copy{border-radius:var(--r-sm);background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text-2);transition:all .2s}.btn-clear{padding:16px 22px}.ex-btn,.copy-btn,.code-copy{font-size:11px;padding:5px 11px}.btn-clear:hover,.ex-btn:hover,.copy-btn:hover,.code-copy:hover{border-color:var(--gold);color:var(--gold)}.spin-ring{width:18px;height:18px;border-radius:50%;border:2px solid rgba(10,13,20,.3);border-top-color:var(--ink);animation:spin .7s linear infinite;display:none}@keyframes spin{to{transform:rotate(360deg)}}
+#loadingOverlay{display:none;padding:56px 32px;text-align:center;margin-bottom:24px;flex-direction:column;align-items:center;gap:18px}#loadingOverlay.visible{display:flex;animation:fadeUp .4s var(--ease) both}.loader-orb{width:64px;height:64px;border-radius:50%;border:3px solid var(--gold);border-right-color:var(--teal-light);border-bottom-color:transparent;animation:spin .9s linear infinite}.loader-label{font-family:"Playfair Display",serif;font-size:1.1rem;font-weight:600}.loader-sub{font-size:12px;color:var(--text-3)}.loader-steps{display:flex;flex-direction:column;gap:8px;width:min(100%,280px)}.ld-step{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-3);font-family:"JetBrains Mono",monospace;transition:color .3s}.ld-step.active{color:var(--gold)}.ld-step.done{color:var(--teal-light)}.ld-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+#resultsArea{display:none}#resultsArea.visible{display:block;animation:fadeUp .5s var(--ease) both}.res-header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}.res-title{font-family:"Playfair Display",serif;font-size:1.3rem;font-weight:700}.res-meta{font-size:11px;color:var(--text-3);font-family:"JetBrains Mono",monospace}.rg{display:grid;gap:16px}.rg-2{grid-template-columns:1fr 1fr}.rc{padding:24px;position:relative;overflow:hidden}.rc-sent::before{background:linear-gradient(90deg,#ff8fa3,#f43f5e)}.rc-kp::before{background:linear-gradient(90deg,var(--gold),var(--gold-light))}.rc-ld::before{background:linear-gradient(90deg,#38bdf8,#0ea5e9)}.rc-ner::before{background:linear-gradient(90deg,#86efac,#22c55e)}.rc-sum::before{background:linear-gradient(90deg,#c4b5fd,#8b5cf6)}.rc-error::before{background:linear-gradient(90deg,#fca5a5,#ef4444)}.rc-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.rc-title-row{font-size:.9rem}.rc-icon{width:28px;height:28px}.phrase-cloud,.ner-tags{display:flex;flex-wrap:wrap;gap:8px}.phrase-tag,.ner-tag{font-size:12px;font-weight:500;padding:6px 14px;border-radius:100px;border:1px solid var(--border-warm);background:var(--gold-pale);color:var(--gold-light)}.summary-text,.doc-prose{font-size:14px;line-height:1.85;color:#d4cfc6;font-weight:300}.muted{color:var(--text-3)}.sbar-row,.lang-item{display:flex;align-items:center;gap:10px}.sbar-row{margin-bottom:10px}.sbar-name{font-size:11px;width:60px;color:var(--text-3);text-transform:capitalize}.sbar-track,.lconf-bar{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}.sbar-track{flex:1}.sbar-fill,.lconf-fill{height:100%;border-radius:3px;transition:width 1s var(--ease)}.sbar-pct,.lconf-pct{font-size:11px;font-family:"JetBrains Mono",monospace;color:var(--text-2)}.sent-label{font-family:"Playfair Display",serif;font-size:1.8rem;font-weight:700;margin-bottom:12px}.lang-results,.ner-wrap{display:flex;flex-direction:column;gap:10px}.lang-item{padding:12px 14px;border-radius:var(--r-md);background:rgba(255,255,255,.03);border:1px solid var(--border)}.lang-flag{font-size:22px}.lang-info{flex:1}.lang-name{font-size:14px;font-weight:600}.lang-code{font-size:10px;color:var(--text-3);font-family:"JetBrains Mono",monospace;letter-spacing:.1em}.lconf-bar{width:70px;height:4px}.lconf-fill{background:linear-gradient(90deg,#38bdf8,#0ea5e9)}.ner-cat{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);margin:8px 0}.nt-person{color:#f9a8d4;border-color:rgba(249,168,212,.3);background:rgba(249,168,212,.08)}.nt-org{color:#86efac;border-color:rgba(134,239,172,.3);background:rgba(134,239,172,.08)}.nt-loc{color:#7dd3fc;border-color:rgba(125,211,252,.3);background:rgba(125,211,252,.08)}.nt-dt{color:var(--gold-light);border-color:var(--border-warm);background:var(--gold-pale)}.nt-misc{color:#c4b5fd;border-color:rgba(196,181,253,.3);background:rgba(196,181,253,.08)}
+.docs-layout{display:grid;grid-template-columns:240px 1fr;gap:40px;padding-top:48px;animation:fadeUp .6s .1s var(--ease) both;align-items:start}.docs-sidebar{position:sticky;top:28px}.docs-sidebar-title,.docs-nav-group-label{font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text-3);margin-bottom:16px;padding-left:12px}.docs-nav-group{margin-bottom:24px}.docs-nav-group-label{margin-bottom:8px}.docs-nav-item{appearance:none;-webkit-appearance:none;width:100%;display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--r-sm);font-family:Outfit,sans-serif;font-size:13px;font-weight:500;text-align:left;color:var(--text-2);background:transparent;border:1px solid transparent;box-shadow:none;transition:background .2s,border-color .2s,color .2s,transform .2s}.docs-nav-item:hover{color:var(--text-1);background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.06);transform:translateX(2px)}.docs-nav-item:focus-visible{outline:2px solid rgba(232,201,122,.55);outline-offset:2px}.docs-nav-item.active{color:var(--gold-light);background:var(--gold-pale);border-color:var(--border-warm);box-shadow:0 8px 28px rgba(201,168,76,.08)}.docs-nav-dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.5;flex-shrink:0}.docs-nav-item.active .docs-nav-dot{opacity:1}.doc-section{display:none;animation:fadeUp .4s var(--ease) both}.doc-section.active{display:block}.doc-banner{padding:36px 40px;margin-bottom:32px;position:relative;overflow:hidden}.b-overview::before{background:linear-gradient(90deg,var(--gold),var(--teal-light))}.b-setup::before{background:linear-gradient(90deg,#38bdf8,#818cf8)}.b-sentiment::before{background:linear-gradient(90deg,#ff8fa3,#f43f5e)}.b-keyphrase::before{background:linear-gradient(90deg,var(--gold),var(--gold-light))}.b-language::before{background:linear-gradient(90deg,#38bdf8,#0ea5e9)}.b-ner::before{background:linear-gradient(90deg,#86efac,#22c55e)}.b-summary::before{background:linear-gradient(90deg,#c4b5fd,#8b5cf6)}.b-errors::before{background:linear-gradient(90deg,#fca5a5,#ef4444)}.doc-banner-eyebrow{font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3);margin-bottom:10px}.doc-banner-title{font-family:"Playfair Display",serif;font-size:2rem;font-weight:800;line-height:1.15;margin-bottom:10px}.doc-banner-sub{font-size:14px;color:var(--text-2);line-height:1.65;font-weight:300;max-width:540px}.doc-body{display:flex;flex-direction:column;gap:24px}.doc-card{padding:28px 32px}.doc-card-title{font-size:1.1rem;font-weight:700;margin-bottom:16px}.doc-card-icon{width:30px;height:30px;font-size:14px}.dci-gold{background:var(--gold-pale);border:1px solid var(--border-warm)}.dci-teal{background:rgba(26,140,122,.12);border:1px solid rgba(26,140,122,.25)}.dci-sky{background:rgba(58,123,213,.12);border:1px solid rgba(58,123,213,.25)}.dci-rose{background:rgba(201,76,107,.12);border:1px solid rgba(201,76,107,.25)}.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.feature-card,.limit-card{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px}.fc-icon{font-size:22px;margin-bottom:10px}.fc-title{font-family:"Playfair Display",serif;font-size:.95rem;font-weight:700;margin-bottom:6px}.fc-desc,.err-desc{font-size:12px;color:var(--text-2);line-height:1.6;font-weight:300}.fc-badge{display:inline-block;margin-top:10px;font-size:10px;font-weight:600;padding:3px 10px;border-radius:100px;font-family:"JetBrains Mono",monospace}.badge-free{color:#22c55e;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2)}.badge-paid{color:var(--gold-light);background:var(--gold-pale);border:1px solid var(--border-warm)}.code-block{background:#0d1117;border:1px solid rgba(255,255,255,.08);border-radius:var(--r-md);padding:20px 22px;margin:12px 0;overflow-x:auto}.code-block-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.code-lang{font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)}pre{font-family:"JetBrains Mono",monospace;font-size:12.5px;line-height:1.7;color:#e2e8f0;white-space:pre;overflow-x:auto}.tok-key{color:#7dd3fc}.tok-str{color:#86efac}.tok-cmt{color:#4b5563;font-style:italic}.tok-num{color:var(--gold-light)}.tok-kw{color:#c4b5fd}.tok-fn{color:#f9a8d4}.callout{border-radius:var(--r-md);padding:16px 20px;font-size:13px;line-height:1.65;display:flex;gap:12px}.callout-body{color:var(--text-2)}.callout-body strong{color:var(--text-1)}.callout-info{background:rgba(58,123,213,.08);border:1px solid rgba(58,123,213,.2)}.callout-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2)}.callout-tip{background:rgba(26,140,122,.08);border:1px solid rgba(26,140,122,.25)}.param-table{width:100%;border-collapse:collapse;font-size:13px}.param-table th{font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}.param-table td{padding:11px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text-2);vertical-align:top;line-height:1.5}.param-table td:first-child{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--gold-light)}.limits-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.limit-card{text-align:center}.lc-val{font-family:"Playfair Display",serif;font-size:1.6rem;font-weight:800;line-height:1;margin-bottom:4px}.lc-label{font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.1em}.err-row{display:flex;gap:16px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.04);align-items:flex-start}.err-code{font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700;padding:4px 10px;border-radius:var(--r-sm);background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;white-space:nowrap}.err-title{font-size:13px;font-weight:600;margin-bottom:3px}.try-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--r-sm);font-size:13px;font-weight:600;border:0;background:linear-gradient(135deg,var(--gold),var(--teal));color:var(--ink);box-shadow:0 3px 14px rgba(201,168,76,.25);transition:all .2s;width:fit-content}.try-btn:hover{box-shadow:0 6px 24px rgba(201,168,76,.4);transform:translateY(-1px)}
+footer{text-align:center;padding:40px 0 0;border-top:1px solid var(--border);font-size:12px;color:var(--text-3);font-family:"JetBrains Mono",monospace;animation:fadeUp .6s .5s var(--ease) both}footer span{color:var(--gold)}#toasts{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none}.toast{display:flex;align-items:center;gap:10px;background:rgba(12,16,28,.97);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-md);padding:13px 18px;font-size:13px;font-weight:500;box-shadow:0 12px 40px rgba(0,0,0,.6);pointer-events:auto;min-width:220px;max-width:320px;animation:toastIn .35s cubic-bezier(.34,1.56,.64,1) both}.toast.out{animation:toastOut .25s ease forwards}.toast-success{border-left:3px solid #22c55e}.toast-error{border-left:3px solid var(--rose)}.toast-info{border-left:3px solid var(--gold)}@keyframes toastIn{from{opacity:0;transform:translateY(14px) scale(.93)}to{opacity:1;transform:none}}@keyframes toastOut{to{opacity:0;transform:translateY(8px)}}@keyframes fadeDown{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:none}}@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@media(max-width:860px){.docs-layout{grid-template-columns:1fr}.docs-sidebar{position:static}.workspace{grid-template-columns:1fr}.rg-2{grid-template-columns:1fr}nav{flex-wrap:wrap}.nav-badge{display:none}}@media(max-width:640px){.config-grid,.feature-grid{grid-template-columns:1fr}.limits-grid{grid-template-columns:1fr 1fr}.page{padding-inline:16px}.doc-card,.doc-banner,.config-panel{padding:24px}.nav-pills{order:3;width:100%;justify-content:center}.action-row{flex-direction:column}.btn-analyze,.btn-clear{width:100%}}
+</style>
+</head>
+<body>
+<div class="bg-canvas"></div><div class="bg-grid"></div><div id="toasts"></div>
+<div class="page">
+<nav>
+  <button class="nav-brand" data-view="analyze" style="background:transparent;border:0"><div class="nav-logo">L</div>LinguaAI</button>
+  <div class="nav-pills">
+    <button class="nav-pill active" id="pill-analyze" data-view="analyze">Analyze</button>
+    <button class="nav-pill" id="pill-docs" data-view="docs">Docs</button>
+    <button class="nav-pill" id="pill-api" data-view="api">API</button>
+  </div>
+  <div class="nav-badge">Azure Language</div>
+</nav>
+
+<div class="view active" id="view-analyze">
+  <section class="hero">
+    <div class="eyebrow"><span class="pulse-dot"></span>Azure Cognitive Services</div>
+    <h1 class="title">Understand Language<br/><span class="title-grad">Like Never Before</span></h1>
+    <p class="hero-sub">Five powerful NLP analyses in one elegant workspace. Sentiment, entities, key phrases, language detection, and extractive summary.</p>
+    <div class="feat-chips">
+      <span class="feat-chip chip-s">♡ Sentiment Analysis</span><span class="feat-chip chip-k">◈ Key Phrases</span><span class="feat-chip chip-l">⊙ Language Detection</span><span class="feat-chip chip-n">◆ Named Entities</span><span class="feat-chip chip-sum">✦ Summarization</span>
+    </div>
+  </section>
+
+  <div class="config-panel">
+    <div class="config-title"><div class="c-icon">⚙</div>Azure Language Service Configuration</div>
+    <div class="config-grid">
+      <div><div class="f-label">Endpoint URL</div><input class="f-input" id="cfgEndpoint" type="url" placeholder="https://YOUR-RESOURCE.cognitiveservices.azure.com"/></div>
+      <div><div class="f-label">API Key</div><input class="f-input" id="cfgKey" type="password" placeholder="Leave blank when server env vars are configured"/></div>
+    </div>
+  </div>
+
+  <div class="workspace">
+    <div class="ws-card">
+      <div class="ws-head"><div class="ws-title"><div class="ws-icon">✎</div>Input Text</div><button class="ex-btn" id="exampleBtn">Try example</button></div>
+      <textarea id="textInput" rows="9" placeholder="Type or paste any text here..."></textarea>
+      <div class="char-row"><span id="charCount">0 chars</span><span id="wordDisp">0 words</span></div>
+    </div>
+    <div class="ws-card">
+      <div class="ws-head"><div class="ws-title"><div class="ws-icon">◈</div>Analysis Mode</div></div>
+      <div class="mode-tabs" id="modeTabs">
+        <button class="mode-tab active" data-mode="all">All</button><button class="mode-tab" data-mode="sentiment">Sentiment</button><button class="mode-tab" data-mode="keyphrase">Key Phrases</button><button class="mode-tab" data-mode="language">Language</button><button class="mode-tab" data-mode="ner">Entities</button><button class="mode-tab" data-mode="summary">Summary</button>
+      </div>
+      <div class="mode-desc-box" id="modeDescBox"><strong>All Analyses</strong>Run all five Azure Language Service features simultaneously. The backend proxy calls Azure in parallel and reports partial results when one feature fails.</div>
+      <div class="mini-stats">
+        <div class="mini-stat"><div class="ms-val" id="msWords" style="color:var(--gold)">0</div><div class="ms-lbl">Words</div></div>
+        <div class="mini-stat"><div class="ms-val" id="msSents" style="color:var(--teal-light)">0</div><div class="ms-lbl">Sentences</div></div>
+        <div class="mini-stat"><div class="ms-val" id="msChars" style="color:#7dd3fc">0</div><div class="ms-lbl">Chars</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-row"><button class="btn-analyze" id="analyzeBtn"><div class="spin-ring" id="spinRing"></div><span id="btnLbl">✦ Analyze Text</span></button><button class="btn-clear" id="clearBtn">Clear</button></div>
+  <div id="loadingOverlay">
+    <div class="loader-orb"></div><div class="loader-label">Azure Language is thinking...</div><div class="loader-sub">Calling the local backend proxy</div>
+    <div class="loader-steps"><div class="ld-step" id="ls0"><span class="ld-dot"></span>Validating request</div><div class="ld-step" id="ls1"><span class="ld-dot"></span>Running sentiment analysis</div><div class="ld-step" id="ls2"><span class="ld-dot"></span>Extracting key phrases</div><div class="ld-step" id="ls3"><span class="ld-dot"></span>Detecting language</div><div class="ld-step" id="ls4"><span class="ld-dot"></span>Recognizing named entities</div><div class="ld-step" id="ls5"><span class="ld-dot"></span>Generating extractive summary</div></div>
+  </div>
+  <div id="resultsArea"><div class="res-header"><div class="res-title">Analysis Results</div><div class="res-meta" id="resMeta">-</div></div><div id="resGrid"></div></div>
+</div>
+
+<div class="view" id="view-docs">
+  <div class="docs-layout">
+    <aside class="docs-sidebar" aria-label="Documentation sections">
+      <div class="docs-sidebar-title">Documentation</div>
+      <div class="docs-nav-group"><div class="docs-nav-group-label">Getting Started</div><button class="docs-nav-item active" data-doc="overview"><span class="docs-nav-dot"></span>Overview</button><button class="docs-nav-item" data-doc="setup"><span class="docs-nav-dot"></span>Setup & Config</button></div>
+      <div class="docs-nav-group"><div class="docs-nav-group-label">Features</div><button class="docs-nav-item" data-doc="sentiment"><span class="docs-nav-dot"></span>Sentiment Analysis</button><button class="docs-nav-item" data-doc="keyphrase"><span class="docs-nav-dot"></span>Key Phrase Extraction</button><button class="docs-nav-item" data-doc="language"><span class="docs-nav-dot"></span>Language Detection</button><button class="docs-nav-item" data-doc="ner"><span class="docs-nav-dot"></span>Named Entity Recognition</button><button class="docs-nav-item" data-doc="summary"><span class="docs-nav-dot"></span>Extractive Summarization</button></div>
+      <div class="docs-nav-group"><div class="docs-nav-group-label">Reference</div><button class="docs-nav-item" data-doc="errors"><span class="docs-nav-dot"></span>Error Codes</button><button class="docs-nav-item" data-doc="limits"><span class="docs-nav-dot"></span>Rate Limits & Quotas</button></div>
+    </aside>
+    <main class="docs-content">
+      <section class="doc-section active" id="doc-overview"><div class="doc-banner b-overview"><div class="doc-banner-eyebrow">Getting Started · Overview</div><div class="doc-banner-title">LinguaAI Documentation</div><div class="doc-banner-sub">Everything needed to configure and use LinguaAI with Azure AI Language.</div></div><div class="doc-body"><div class="doc-card"><div class="doc-card-title"><div class="doc-card-icon dci-gold">◈</div>Single File App</div><div class="doc-prose"><p>LinguaAI now keeps the HTML, CSS, JavaScript, and Azure request JSON builders inside <strong>index.html</strong>. Paste the single file into VS Code, enter your Azure endpoint and key in the UI, and run it with Live Server or any simple static server.</p></div></div><div class="doc-card"><div class="doc-card-title"><div class="doc-card-icon dci-teal">✦</div>Available Features</div><div class="feature-grid"><div class="feature-card"><div class="fc-icon">♡</div><div class="fc-title">Sentiment Analysis</div><div class="fc-desc">Document-level sentiment and confidence scores.</div><div class="fc-badge badge-free">Sync</div></div><div class="feature-card"><div class="fc-icon">◈</div><div class="fc-title">Key Phrases</div><div class="fc-desc">Extracts important terms and topics.</div><div class="fc-badge badge-free">Sync</div></div><div class="feature-card"><div class="fc-icon">⊙</div><div class="fc-title">Language Detection</div><div class="fc-desc">Detects language and confidence.</div><div class="fc-badge badge-free">Sync</div></div><div class="feature-card"><div class="fc-icon">◆</div><div class="fc-title">Named Entities</div><div class="fc-desc">Finds people, organizations, locations, dates, events, and quantities.</div><div class="fc-badge badge-free">Sync</div></div><div class="feature-card"><div class="fc-icon">✦</div><div class="fc-title">Summarization</div><div class="fc-desc">Submits and polls Azure's async extractive summarization job.</div><div class="fc-badge badge-paid">Async</div></div></div></div><div class="callout callout-tip"><div>💡</div><div class="callout-body"><strong>Docs bug fix:</strong> navigation is now event-driven, keyboard-friendly, hash-aware, and no longer depends on inline handlers.</div></div></div></section>
+      <section class="doc-section" id="doc-setup"><div class="doc-banner b-setup"><div class="doc-banner-eyebrow">Getting Started · Configuration</div><div class="doc-banner-title">Setup & Configuration</div><div class="doc-banner-sub">Create an Azure Language resource and connect it to this local app.</div></div><div class="doc-body"><div class="doc-card"><div class="doc-card-title"><div class="doc-card-icon dci-sky">1</div>Run Locally</div><div class="code-block"><div class="code-block-header"><span class="code-lang">Terminal</span><button class="code-copy" data-copy="npm install&#10;npm run dev">Copy</button></div><pre>npm install
+npm run dev</pre></div></div><div class="doc-card"><div class="doc-card-title"><div class="doc-card-icon dci-gold">2</div>Credential Options</div><table class="param-table"><thead><tr><th>Option</th><th>How</th><th>Best For</th></tr></thead><tbody><tr><td>Form fields</td><td>Paste endpoint and key in the UI</td><td>Quick local testing</td></tr><tr><td>Environment vars</td><td>AZURE_LANGUAGE_ENDPOINT and AZURE_LANGUAGE_KEY</td><td>Keeping credentials out of browser state</td></tr></tbody></table></div><div class="callout callout-warn"><div>⚠</div><div class="callout-body"><strong>Summarization availability varies by region and tier.</strong> If only summary fails, the app now shows the other successful analysis cards instead of discarding the whole result.</div></div></div></section>
+      <section class="doc-section" id="doc-sentiment"><div class="doc-banner b-sentiment"><div class="doc-banner-eyebrow">Feature · NLP</div><div class="doc-banner-title">Sentiment Analysis</div><div class="doc-banner-sub">Uses Azure kind <strong>SentimentAnalysis</strong> through the backend proxy.</div></div><div class="doc-body"><div class="doc-card"><div class="doc-card-title"><div class="doc-card-icon dci-rose">⌨</div>Backend Request</div><div class="code-block"><div class="code-block-header"><span class="code-lang">JSON</span><button class="code-copy" data-copy='{"mode":"sentiment","text":"Your text","endpoint":"https://...","key":"..."}'>Copy</button></div><pre>{
+  "mode": "sentiment",
+  "text": "Your text here"
+}</pre></div></div><button class="try-btn" data-try="sentiment">✦ Try Sentiment Analysis</button></div></section>
+      <section class="doc-section" id="doc-keyphrase"><div class="doc-banner b-keyphrase"><div class="doc-banner-eyebrow">Feature · NLP</div><div class="doc-banner-title">Key Phrase Extraction</div><div class="doc-banner-sub">Uses Azure kind <strong>KeyPhraseExtraction</strong>.</div></div><div class="doc-body"><div class="doc-card"><div class="doc-card-title"><div class="doc-card-icon dci-gold">↩</div>Result Shape</div><pre>{
+  "results": { "keyphrase": { "ok": true, "data": { "keyPhrases": [] } } }
+}</pre></div><button class="try-btn" data-try="keyphrase">✦ Try Key Phrase Extraction</button></div></section>
+      <section class="doc-section" id="doc-language"><div class="doc-banner b-language"><div class="doc-banner-eyebrow">Feature · NLP</div><div class="doc-banner-title">Language Detection</div><div class="doc-banner-sub">Uses Azure kind <strong>LanguageDetection</strong>; the backend omits a forced language code.</div></div><div class="doc-body"><div class="doc-card"><div class="doc-card-title"><div class="doc-card-icon dci-sky">⊙</div>Response</div><pre>{ "detectedLanguage": { "name": "English", "iso6391Name": "en", "confidenceScore": 1 } }</pre></div><button class="try-btn" data-try="language">✦ Try Language Detection</button></div></section>
+      <section class="doc-section" id="doc-ner"><div class="doc-banner b-ner"><div class="doc-banner-eyebrow">Feature · NLP</div><div class="doc-banner-title">Named Entity Recognition</div><div class="doc-banner-sub">Uses Azure kind <strong>EntityRecognition</strong>.</div></div><div class="doc-body"><div class="doc-card"><table class="param-table"><thead><tr><th>Category</th><th>Examples</th></tr></thead><tbody><tr><td>Person</td><td>Satya Nadella</td></tr><tr><td>Organization</td><td>Microsoft</td></tr><tr><td>GPE / Location</td><td>Seattle, India</td></tr><tr><td>DateTime</td><td>2026, yesterday</td></tr></tbody></table></div><button class="try-btn" data-try="ner">✦ Try Named Entity Recognition</button></div></section>
+      <section class="doc-section" id="doc-summary"><div class="doc-banner b-summary"><div class="doc-banner-eyebrow">Feature · NLP</div><div class="doc-banner-title">Extractive Summarization</div><div class="doc-banner-sub">The backend submits the job, polls operation-location, and returns the completed document.</div></div><div class="doc-body"><div class="callout callout-warn"><div>⚠</div><div class="callout-body"><strong>Async API:</strong> the server polls for up to about 35 seconds and reports a timeout cleanly.</div></div><button class="try-btn" data-try="summary">✦ Try Extractive Summarization</button></div></section>
+      <section class="doc-section" id="doc-errors"><div class="doc-banner b-errors"><div class="doc-banner-eyebrow">Reference · Troubleshooting</div><div class="doc-banner-title">Error Codes</div><div class="doc-banner-sub">Common Azure and backend errors.</div></div><div class="doc-body"><div class="doc-card"><div class="err-row"><div class="err-code">400</div><div><div class="err-title">Bad Request</div><div class="err-desc">Missing endpoint, key, text, or unsupported mode.</div></div></div><div class="err-row"><div class="err-code">401</div><div><div class="err-title">Unauthorized</div><div class="err-desc">Invalid or regenerated Azure key.</div></div></div><div class="err-row"><div class="err-code">404</div><div><div class="err-title">Not Found</div><div class="err-desc">Wrong endpoint or unavailable feature in the resource region.</div></div></div><div class="err-row"><div class="err-code">502</div><div><div class="err-title">Azure Upstream Error</div><div class="err-desc">Azure returned no result or a task failed.</div></div></div><div class="err-row"><div class="err-code">504</div><div><div class="err-title">Timeout</div><div class="err-desc">Summarization polling did not complete in time.</div></div></div></div></div></section>
+      <section class="doc-section" id="doc-limits"><div class="doc-banner b-setup"><div class="doc-banner-eyebrow">Reference · Quotas</div><div class="doc-banner-title">Rate Limits & Quotas</div><div class="doc-banner-sub">Validate input size before sending to Azure.</div></div><div class="doc-body"><div class="doc-card"><div class="limits-grid"><div class="limit-card"><div class="lc-val" style="color:var(--gold)">125K</div><div class="lc-label">Max Chars</div></div><div class="limit-card"><div class="lc-val" style="color:var(--teal-light)">5</div><div class="lc-label">Modes</div></div><div class="limit-card"><div class="lc-val" style="color:#7dd3fc">1MB</div><div class="lc-label">Request Body</div></div></div></div></div></section>
+    </main>
+  </div>
+</div>
+
+<div class="view" id="view-api">
+  <div style="padding-top:60px;animation:fadeUp .6s var(--ease) both;">
+    <div class="doc-banner b-setup"><div class="doc-banner-eyebrow">Reference</div><div class="doc-banner-title">API Quick Reference</div><div class="doc-banner-sub">The frontend calls your local backend, and the backend calls Azure.</div></div>
+    <div class="doc-body">
+      <div class="doc-card"><div class="doc-card-title"><div class="doc-card-icon dci-sky">🔗</div>Direct Azure Endpoint</div><div class="code-block"><div class="code-block-header"><span class="code-lang">HTTP</span><button class="code-copy" data-copy="POST https://YOUR-RESOURCE.cognitiveservices.azure.com/language/:analyze-text?api-version=2023-04-01">Copy</button></div><pre><span class="tok-kw">POST</span> <span class="tok-str">https://YOUR-RESOURCE.cognitiveservices.azure.com/language/:analyze-text?api-version=2023-04-01</span></pre></div></div>
+      <div class="doc-card"><div class="doc-card-title"><div class="doc-card-icon dci-gold">⚡</div>Request Body</div><table class="param-table"><thead><tr><th>Field</th><th>Required</th><th>Description</th></tr></thead><tbody><tr><td>kind</td><td>Yes</td><td>SentimentAnalysis, KeyPhraseExtraction, LanguageDetection, EntityRecognition</td></tr><tr><td>analysisInput</td><td>Yes</td><td>Documents array containing the text to analyze</td></tr><tr><td>parameters</td><td>Yes</td><td>Model settings such as modelVersion latest</td></tr><tr><td>tasks</td><td>Summary only</td><td>Used by the async summarization jobs endpoint</td></tr></tbody></table></div>
+      <div class="doc-card"><div class="doc-card-title"><div class="doc-card-icon dci-teal">{ }</div>JavaScript Fetch Example</div><div class="code-block"><div class="code-block-header"><span class="code-lang">JavaScript</span><button class="code-copy" id="copyFetch">Copy</button></div><pre><span class="tok-kw">const</span> res = <span class="tok-kw">await</span> <span class="tok-fn">fetch</span>(endpoint + <span class="tok-str">'/language/:analyze-text?api-version=2023-04-01'</span>, {
+  method: <span class="tok-str">'POST'</span>,
+  headers: {
+    <span class="tok-str">'Content-Type'</span>: <span class="tok-str">'application/json'</span>,
+    <span class="tok-str">'Ocp-Apim-Subscription-Key'</span>: apiKey
+  },
+  body: <span class="tok-fn">JSON.stringify</span>({
+    kind: <span class="tok-str">'SentimentAnalysis'</span>,
+    parameters: { modelVersion: <span class="tok-str">'latest'</span> },
+    analysisInput: { documents: [{ id: <span class="tok-str">'1'</span>, language: <span class="tok-str">'en'</span>, text }] }
+  })
+});
+<span class="tok-kw">const</span> data = <span class="tok-kw">await</span> res.<span class="tok-fn">json</span>();</pre></div></div>
+      <div class="callout callout-tip"><div>💡</div><div class="callout-body">API page bug fix: copy buttons now use data attributes instead of fragile inline JavaScript strings.</div></div>
+      <button class="try-btn" data-view="analyze">✦ Open Analyzer</button>
+    </div>
+  </div>
+</div>
+<footer><p>LinguaAI &nbsp;·&nbsp; Powered by <span>Azure Language Service</span> &nbsp;·&nbsp; Crafted with precision</p></footer>
+</div>
+
+<script>
+const VIEWS=["analyze","docs","api"];
+const MODES={all:{t:"All Analyses",d:"Run all five Azure Language Service features simultaneously. The backend calls Azure in parallel and returns partial results if one task fails."},sentiment:{t:"Sentiment Analysis",d:"Detect emotional tone with positive, negative, neutral, or mixed confidence scores."},keyphrase:{t:"Key Phrase Extraction",d:"Identify important phrases and concepts for tagging, search, and indexing."},language:{t:"Language Detection",d:"Identify the input language without forcing an English language hint."},ner:{t:"Named Entity Recognition",d:"Spot people, organizations, locations, dates, events, and other real-world entities."},summary:{t:"Extractive Summarization",d:"Condense longer text by extracting the most representative sentences via Azure's async job API."}};
+const EXAMPLE=`Microsoft Azure is a cloud computing service created by Microsoft for building, testing, deploying, and managing applications through Microsoft-managed data centers. The platform provides SaaS, PaaS, and IaaS solutions.
+
+Satya Nadella, the CEO of Microsoft, has led the company's transformation into a cloud-first organization since 2014. Azure now operates in over 60 regions worldwide, making it one of the largest cloud providers in terms of global reach. The Azure Cognitive Services, including the Language Service, allow developers to embed intelligent language processing into their applications without requiring deep expertise in machine learning.
+
+In 2023, Microsoft announced a major investment in OpenAI, integrating advanced AI capabilities across its product line, including Azure OpenAI Service. This partnership has accelerated adoption of large language models in enterprise settings globally.`;
+const $=id=>document.getElementById(id);
+const textInput=$("textInput"), cfgEp=$("cfgEndpoint"), cfgKey=$("cfgKey"), analyzeBtn=$("analyzeBtn"), clearBtn=$("clearBtn"), spinRing=$("spinRing"), btnLbl=$("btnLbl"), loadingOverlay=$("loadingOverlay"), resultsArea=$("resultsArea"), resGrid=$("resGrid"), resMeta=$("resMeta");
+const ldSteps=[0,1,2,3,4,5].map(i=>$(`ls${i}`));
+let currentMode="all", stepTimers=[];
+
+function goTo(view, doc){
+  if(!VIEWS.includes(view)) view="analyze";
+  VIEWS.forEach(v=>{ $("view-"+v).classList.toggle("active",v===view); $("pill-"+v).classList.toggle("active",v===view); });
+  if(view==="docs" && doc) showDoc(doc, false);
+  history.replaceState(null,"", view==="analyze" ? location.pathname : `#${view}${doc?`/${doc}`:""}`);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function showDoc(id, updateHash=true){
+  const section=$("doc-"+id);
+  if(!section) return;
+  document.querySelectorAll(".doc-section").forEach(s=>s.classList.remove("active"));
+  document.querySelectorAll(".docs-nav-item").forEach(n=>n.classList.remove("active"));
+  section.classList.add("active");
+  document.querySelector(`.docs-nav-item[data-doc="${CSS.escape(id)}"]`)?.classList.add("active");
+  if(updateHash) history.replaceState(null,"",`#docs/${id}`);
+}
+document.addEventListener("click", event=>{
+  const viewBtn=event.target.closest("[data-view]");
+  if(viewBtn){ goTo(viewBtn.dataset.view); return; }
+  const docBtn=event.target.closest("[data-doc]");
+  if(docBtn){ showDoc(docBtn.dataset.doc); return; }
+  const tryBtn=event.target.closest("[data-try]");
+  if(tryBtn){ setMode(tryBtn.dataset.try); goTo("analyze"); return; }
+  const copyBtn=event.target.closest("[data-copy]");
+  if(copyBtn) doCopy(copyBtn.dataset.copy);
+});
+function bootRoute(){
+  const hash=location.hash.replace(/^#/,"");
+  const [view,doc]=hash.split("/");
+  if(view) goTo(view,doc);
+}
+window.addEventListener("hashchange", bootRoute);
+
+function wc(t){return t.trim()===""?0:t.trim().split(/\s+/).length}
+function sc(t){return t.trim()===""?0:Math.max(1,t.split(/[.!?]+/).filter(s=>s.trim().length>2).length)}
+function updateStats(){
+  const t=textInput.value,w=wc(t),c=t.length,s=sc(t);
+  $("charCount").textContent=c.toLocaleString()+" chars"; $("wordDisp").textContent=w.toLocaleString()+" words";
+  $("msWords").textContent=w.toLocaleString(); $("msSents").textContent=s.toLocaleString(); $("msChars").textContent=c.toLocaleString();
+}
+function setMode(mode){
+  currentMode=MODES[mode]?mode:"all";
+  document.querySelectorAll(".mode-tab").forEach(b=>b.classList.toggle("active",b.dataset.mode===currentMode));
+  $("modeDescBox").innerHTML=`<strong>${MODES[currentMode].t}</strong>${MODES[currentMode].d}`;
+}
+textInput.addEventListener("input",()=>{ textInput.style.height="auto"; textInput.style.height=Math.min(textInput.scrollHeight,520)+"px"; updateStats(); });
+document.querySelectorAll(".mode-tab").forEach(btn=>btn.addEventListener("click",()=>setMode(btn.dataset.mode)));
+$("exampleBtn").addEventListener("click",()=>{ textInput.value=EXAMPLE; textInput.dispatchEvent(new Event("input")); toast("Example text loaded!","info"); });
+clearBtn.addEventListener("click",()=>{ textInput.value=""; textInput.style.height="auto"; updateStats(); resultsArea.classList.remove("visible"); resultsArea.style.display="none"; loadingOverlay.classList.remove("visible"); toast("Cleared.","info"); });
+
+function toast(msg,type="info"){
+  const icons={success:"✓",error:"✕",info:"◆"}, t=document.createElement("div");
+  t.className=`toast toast-${type}`; t.innerHTML=`<span>${icons[type]}</span><span>${escapeHtml(msg)}</span>`;
+  $("toasts").appendChild(t); setTimeout(()=>{t.classList.add("out");setTimeout(()=>t.remove(),280)},3800);
+}
+function startSteps(mode){
+  ldSteps.forEach(s=>s.classList.remove("active","done"));
+  const map={all:[0,1,2,3,4,5],sentiment:[0,1],keyphrase:[0,2],language:[0,3],ner:[0,4],summary:[0,5]}, active=map[mode]||[0];
+  stepTimers=active.map((idx,i)=>setTimeout(()=>{ if(i>0) ldSteps[active[i-1]].classList.replace("active","done"); ldSteps[idx].classList.add("active"); }, i*700));
+}
+function setLoading(on){
+  analyzeBtn.disabled=on; spinRing.style.display=on?"block":"none"; btnLbl.textContent=on?"Analyzing...":"✦ Analyze Text"; loadingOverlay.classList.toggle("visible",on);
+  if(on){resultsArea.classList.remove("visible");resultsArea.style.display="none";startSteps(currentMode);loadingOverlay.scrollIntoView({behavior:"smooth",block:"center"});}
+  else{stepTimers.forEach(clearTimeout);ldSteps.forEach(s=>{s.classList.remove("active");s.classList.add("done")});setTimeout(()=>ldSteps.forEach(s=>s.classList.remove("done")),700);}
+}
+async function azurePost(endpoint, apiKey, body){
+  const url=`${endpoint.replace(/\/$/,"")}/language/:analyze-text?api-version=2023-04-01`;
+  const response=await fetch(url,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Ocp-Apim-Subscription-Key":apiKey},
+    body:JSON.stringify(body)
+  });
+  if(!response.ok){
+    const error=await response.json().catch(()=>({}));
+    throw new Error(error?.error?.message || `Azure request failed with HTTP ${response.status}`);
+  }
+  return response.json();
+}
+function documentFor(text, needsLanguage=true){
+  return needsLanguage ? {id:"1",language:"en",text} : {id:"1",text};
+}
+function syncBody(kind, text){
+  return {
+    kind,
+    parameters:{modelVersion:"latest"},
+    analysisInput:{documents:[documentFor(text, kind!=="LanguageDetection")]}
+  };
+}
+async function apiSentiment(endpoint, apiKey, text){
+  const data=await azurePost(endpoint,apiKey,syncBody("SentimentAnalysis",text));
+  return data?.results?.documents?.[0] || null;
+}
+async function apiKeyPhrases(endpoint, apiKey, text){
+  const data=await azurePost(endpoint,apiKey,syncBody("KeyPhraseExtraction",text));
+  return data?.results?.documents?.[0] || null;
+}
+async function apiLanguage(endpoint, apiKey, text){
+  const data=await azurePost(endpoint,apiKey,syncBody("LanguageDetection",text));
+  return data?.results?.documents?.[0] || null;
+}
+async function apiNER(endpoint, apiKey, text){
+  const data=await azurePost(endpoint,apiKey,syncBody("EntityRecognition",text));
+  return data?.results?.documents?.[0] || null;
+}
+async function apiSummary(endpoint, apiKey, text){
+  const url=`${endpoint.replace(/\/$/,"")}/language/analyze-text/jobs?api-version=2023-04-01`;
+  const response=await fetch(url,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Ocp-Apim-Subscription-Key":apiKey},
+    body:JSON.stringify({
+      displayName:"LinguaAI Summary",
+      analysisInput:{documents:[documentFor(text,true)]},
+      tasks:[{kind:"ExtractiveSummarization",parameters:{sentenceCount:3}}]
+    })
+  });
+  if(!response.ok){
+    const error=await response.json().catch(()=>({}));
+    throw new Error(error?.error?.message || `Summary submission failed with HTTP ${response.status}`);
+  }
+  const operationLocation=response.headers.get("operation-location");
+  if(!operationLocation) throw new Error("Azure did not return an operation-location header.");
+  for(let attempt=0;attempt<24;attempt+=1){
+    await new Promise(resolve=>setTimeout(resolve,attempt<2?1000:1500));
+    const poll=await fetch(operationLocation,{headers:{"Ocp-Apim-Subscription-Key":apiKey}});
+    const data=await poll.json().catch(()=>({}));
+    if(data.status==="succeeded") return data.tasks?.items?.[0]?.results?.documents?.[0] || null;
+    if(data.status==="failed" || data.status==="cancelled") throw new Error(data.errors?.[0]?.message || `Summarization ${data.status}.`);
+  }
+  throw new Error("Summarization timed out while polling Azure.");
+}
+async function runClientAnalysis(mode, endpoint, apiKey, text){
+  const tasks=[];
+  const add=(name,promise)=>tasks.push(promise.then(data=>[name,{ok:true,data}]).catch(error=>[name,{ok:false,error:error.message}]));
+  if(mode==="all" || mode==="sentiment") add("sentiment",apiSentiment(endpoint,apiKey,text));
+  if(mode==="all" || mode==="keyphrase") add("keyphrase",apiKeyPhrases(endpoint,apiKey,text));
+  if(mode==="all" || mode==="language") add("language",apiLanguage(endpoint,apiKey,text));
+  if(mode==="all" || mode==="ner") add("ner",apiNER(endpoint,apiKey,text));
+  if(mode==="all" || mode==="summary") add("summary",apiSummary(endpoint,apiKey,text));
+  return Object.fromEntries(await Promise.all(tasks));
+}
+async function analyze(){
+  const text=textInput.value.trim();
+  const endpoint=cfgEp.value.trim();
+  const apiKey=cfgKey.value.trim();
+  if(!text){toast("Please enter some text.","error");textInput.focus();return}
+  if(text.length<15){toast("Text is too short for analysis.","error");return}
+  if(!endpoint){toast("Please enter your Azure endpoint URL.","error");cfgEp.focus();return}
+  if(!apiKey){toast("Please enter your Azure API key.","error");cfgKey.focus();return}
+  setLoading(true); const t0=performance.now();
+  try{
+    const results=await runClientAnalysis(currentMode,endpoint,apiKey,text);
+    renderResults(results);
+    resMeta.textContent=`Completed in ${((performance.now()-t0)/1000).toFixed(2)}s · ${wc(text)} words analyzed`;
+    setLoading(false); resultsArea.style.display="block"; requestAnimationFrame(()=>resultsArea.classList.add("visible")); setTimeout(()=>resultsArea.scrollIntoView({behavior:"smooth",block:"start"}),200);
+    const failed=Object.values(results).filter(r=>!r.ok).length;
+    toast(failed?`Analysis completed with ${failed} warning${failed>1?"s":""}.`:"Analysis complete!","success");
+  }catch(error){ setLoading(false); console.error(error); toast(`Error: ${error.message}`,"error"); }
+}
+analyzeBtn.addEventListener("click", analyze);
+
+function renderResults(results){
+  const cards=[];
+  if(results.sentiment) cards.push(card("rc-sent","rgba(255,143,163,.12)","♡","Sentiment Analysis",renderResult(results.sentiment,renderSentiment),copySentiment(results.sentiment.data)));
+  if(results.keyphrase) cards.push(card("rc-kp","rgba(201,168,76,.12)","◈","Key Phrases",renderResult(results.keyphrase,renderKeyPhrases),results.keyphrase.data?.keyPhrases?.join(", ")||""));
+  if(results.language) cards.push(card("rc-ld","rgba(125,211,252,.12)","⊙","Language Detection",renderResult(results.language,renderLanguage),results.language.data?.detectedLanguage?.name||""));
+  if(results.ner) cards.push(card("rc-ner","rgba(134,239,172,.12)","◆","Named Entities",renderResult(results.ner,renderNER),results.ner.data?.entities?.map(e=>`${e.text} (${e.category})`).join(", ")||""));
+  if(results.summary) cards.push(card("rc-sum","rgba(196,181,253,.12)","✦","Extractive Summary",renderResult(results.summary,renderSummary),results.summary.data?.sentences?.map(s=>s.text).join(" ")||""));
+  resGrid.innerHTML=`<div class="rg ${cards.length===1?"":"rg-2"}">${cards.join("")}</div>`;
+  setTimeout(()=>document.querySelectorAll("[data-w]").forEach(el=>el.style.width=el.dataset.w+"%"),60);
+}
+function renderResult(result, renderer){ return result.ok ? renderer(result.data) : `<p class="muted">This feature failed: ${escapeHtml(result.error || "Unknown error")}</p>`; }
+function copySentiment(d){return d?`Sentiment: ${d.sentiment}\nPositive: ${Math.round((d.confidenceScores?.positive||0)*100)}%\nNegative: ${Math.round((d.confidenceScores?.negative||0)*100)}%\nNeutral: ${Math.round((d.confidenceScores?.neutral||0)*100)}%`:""}
+function card(cls,bg,icon,title,content,copyStr=""){return `<div class="rc ${cls}"><div class="rc-head"><div class="rc-title-row"><div class="rc-icon" style="background:${bg}">${icon}</div>${title}</div><button class="copy-btn" data-copy="${escapeAttr(copyStr)}">Copy</button></div>${content}</div>`}
+function renderSentiment(doc){
+  if(!doc)return'<p class="muted">No sentiment data returned.</p>';
+  const scores=doc.confidenceScores||{}, colors={positive:"#22c55e",negative:"#f43f5e",neutral:"#94a3b8",mixed:"#f59e0b"};
+  return `<div class="sent-label" style="color:${colors[doc.sentiment]||colors.neutral}">${titleCase(doc.sentiment||"neutral")}</div>${["positive","negative","neutral"].map(k=>{const pct=Math.round((scores[k]||0)*100);return `<div class="sbar-row"><div class="sbar-name">${k}</div><div class="sbar-track"><div class="sbar-fill" style="width:0;background:${colors[k]}" data-w="${pct}"></div></div><div class="sbar-pct">${pct}%</div></div>`}).join("")}`;
+}
+function renderKeyPhrases(doc){return doc?.keyPhrases?.length?`<div class="phrase-cloud">${doc.keyPhrases.map(p=>`<span class="phrase-tag">${escapeHtml(p)}</span>`).join("")}</div>`:'<p class="muted">No key phrases found.</p>'}
+function renderLanguage(doc){const l=doc?.detectedLanguage;if(!l)return'<p class="muted">No language data.</p>';const pct=Math.round((l.confidenceScore||0)*100);return `<div class="lang-item"><div class="lang-flag">🌐</div><div class="lang-info"><div class="lang-name">${escapeHtml(l.name||"Unknown")}</div><div class="lang-code">${escapeHtml((l.iso6391Name||"unknown").toUpperCase())} · ISO 639-1</div></div><div class="lconf-bar"><div class="lconf-fill" data-w="${pct}" style="width:0"></div></div><div class="lconf-pct">${pct}%</div></div>`}
+function renderNER(doc){if(!doc?.entities?.length)return'<p class="muted">No entities recognized.</p>';const groups={};doc.entities.forEach(e=>{const c=e.category||"Miscellaneous";(groups[c] ||= []).push(e)});const cls={Person:"nt-person",Organization:"nt-org",Location:"nt-loc",GPE:"nt-loc",DateTime:"nt-dt",Event:"nt-misc"};return `<div class="ner-wrap">${Object.entries(groups).map(([cat,ents])=>`<div><div class="ner-cat">${escapeHtml(cat)}</div><div class="ner-tags">${ents.map(e=>`<span class="ner-tag ${cls[cat]||"nt-misc"}">${escapeHtml(e.text)}</span>`).join("")}</div></div>`).join("")}</div>`}
+function renderSummary(doc){return doc?.sentences?.length?`<div class="summary-text">${doc.sentences.slice().sort((a,b)=>(b.rankScore||0)-(a.rankScore||0)).map(s=>escapeHtml(s.text)).join(" ")}</div>`:'<p class="muted">No summary generated.</p>'}
+function doCopy(text){navigator.clipboard?.writeText(text).then(()=>toast("Copied!","success")).catch(()=>toast("Copy failed","error"))}
+$("copyFetch").addEventListener("click",()=>doCopy(`const res = await fetch(endpoint + '/language/:analyze-text?api-version=2023-04-01', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Ocp-Apim-Subscription-Key': apiKey
+  },
+  body: JSON.stringify({
+    kind: 'SentimentAnalysis',
+    parameters: { modelVersion: 'latest' },
+    analysisInput: { documents: [{ id: '1', language: 'en', text }] }
+  })
+});
+const data = await res.json();`));
+function escapeHtml(v=""){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function escapeAttr(v=""){return escapeHtml(v).replace(/\n/g,"&#10;")}
+function titleCase(v){return String(v).charAt(0).toUpperCase()+String(v).slice(1)}
+updateStats(); bootRoute();
+</script>
+</body>
+</html>
